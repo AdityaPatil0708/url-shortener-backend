@@ -162,8 +162,9 @@ export const shorturl = async (req: Request, res: Response) => {
 export const redirect = async (req: Request, res: Response) => {
   try {
     const { shortcode } = req.params;
+    const normalizedShortcode = Array.isArray(shortcode) ? shortcode[0] : shortcode;
     
-    if (!shortcode) {
+    if (!normalizedShortcode) {
       return res.status(400).json({
         success: false,
         message: "shortcode required"
@@ -171,7 +172,7 @@ export const redirect = async (req: Request, res: Response) => {
     }
 
     const existingUrl = await prisma.url.findUnique({
-      where: { shortcode }
+      where: { shortcode: normalizedShortcode }
     });
 
     if (!existingUrl) {
